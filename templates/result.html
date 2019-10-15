@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- 上述3个meta标签*必须*放在最前面，任何其他内容都*必须*跟随其后！ -->
+    <title>查图结果</title>
+
+    <!-- Bootstrap -->
+    <link href="{{ url_for('static', filename='bootstrap/css/bootstrap.min.css') }}" rel="stylesheet">
+
+    <!-- HTML5 shim 和 Respond.js 是为了让 IE8 支持 HTML5 元素和媒体查询（media queries）功能 -->
+    <!-- 警告：通过 file:// 协议（就是直接将 html 页面拖拽到浏览器中）访问页面时 Respond.js 不起作用 -->
+    <!--[if lt IE 9]>-->
+    <script src="{{ url_for('static', filename='bootstrap/js/html5shiv.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='bootstrap/js/respond.min.js') }}"></script>
+    <!--[endif]-->
+	<style>
+		a:hover{
+			text-decoration:none
+		}
+
+        .input-text-container{
+			text-align: center;
+			padding: 0 5px 0 5px;
+            border: 1px solid black;
+		}
+
+		.input-label-container{
+			text-align: center;
+			padding: 0;
+            border: 1px solid black;
+		}
+
+		.input-text{
+			width: 100px;
+			text-align: left;
+		}
+		.input-area-frame{
+			margin: 10px 0 10px 0 ; border: -1px solid #000; padding: 3px; text-align: center
+		}
+
+        .input-area-frame p{
+            font-weight: bold;
+        }
+
+        .title {
+            text-align: center;
+            font-weight: bold;
+        }
+        table{
+            border: 1px solid black;
+        }
+        tr, td{
+            text-align: center;
+            border: 1px solid black;
+        }
+
+        @media (max-width: 767px) {
+           table, tr{width: 100%;}
+        }
+        @media (min-width: 768px) {
+          table, tr{width: 100%;}
+        }
+        @media (min-width: 992px) {
+          table, tr{width: 85%;}
+        }
+        @media (min-width: 1200px) {
+         table, tr{width: 70%;}
+        }
+        @media (min-width: 1440px) {
+          table, tr{width: 50%;}
+        }
+
+
+	</style>
+</head>
+<body>
+    <div class="container">
+        <h3 class="title">计算成果</h3>
+        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 input-area-frame">
+            <p>设计参数</p>
+            <div class="5col-lg-2 col-md-2 col-sm-3 col-xs-6 input-label-container" >经度：</div>
+            <div class="5col-lg-2 col-md-2 col-sm-3 col-xs-6 input-text-container" >{{ '%f' % lon }}&nbsp;</div>
+            <div class="5col-lg-2 col-md-2 col-sm-3 col-xs-6 input-label-container" >纬度：</div>
+            <div class="5col-lg-2 col-md-2 col-sm-3 col-xs-6 input-text-container" >{{ '%f' % lat }}&nbsp;</div>
+            <div class="5col-lg-2 col-md-2 col-sm-3 col-xs-6 input-label-container" >水文分区：</div>
+            <div class="5col-lg-2 col-md-2 col-sm-3 col-xs-6 input-text-container" >{{ area_name }}&nbsp;</div>
+            <div class="5col-lg-2 col-md-2 col-sm-3 col-xs-6 input-label-container" >流域面积F：</div>
+            <div class="5col-lg-2 col-md-2 col-sm-3 col-xs-6 input-text-container" >{{ '%.3f' % f }}&nbsp;</div>
+            <div class="5col-lg-2 col-md-2 col-sm-3 col-xs-6 input-label-container" >干流长度L：</div>
+            <div class="5col-lg-2 col-md-2 col-sm-3 col-xs-6 input-text-container" >{{ '%.3f' % l }}&nbsp;</div>
+            <div class="5col-lg-2 col-md-2 col-sm-3 col-xs-6 input-label-container" >平均比降J：</div>
+            <div class="5col-lg-2 col-md-2 col-sm-3 col-xs-6 input-text-container" >{{ '%.4f' % j }}&nbsp;</div>
+            <div class="5col-lg-2 col-md-2 col-sm-3 col-xs-6 input-label-container" >θ：</div>
+            <div class="5col-lg-2 col-md-2 col-sm-3 col-xs-6 input-text-container" >{{ '%.2f' % theta }}&nbsp;</div>
+            <div class="5col-lg-2 col-md-2 col-sm-3 col-xs-6 input-label-container" >汇流参数m：</div>
+            <div class="5col-lg-2 col-md-2 col-sm-3 col-xs-6 input-text-container" >{{ '%.3f' % m }}&nbsp;</div>
+            <div class="5col-lg-2 col-md-2 col-sm-3 col-xs-6 input-label-container" >最大初损Imax：</div>
+            <div class="5col-lg-2 col-md-2 col-sm-3 col-xs-6 input-text-container" >{{ '%.2f' % imax }}&nbsp;</div>
+            <div class="5col-lg-2 col-md-2 col-sm-3 col-xs-6 input-label-container" >平均入渗率μ：</div>
+            <div class="5col-lg-2 col-md-2 col-sm-3 col-xs-6 input-text-container" >{{ '%.2f' % mu }}&nbsp;</div>
+        </div>
+
+        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 input-area-frame">
+            <p>设计暴雨成果表</p>
+            <table>
+                <tr><td colspan="5"><br>暴雨参数</td></tr>
+                <tr>
+                    <td>项目</td>
+                    <td>10分钟</td>
+                    <td>1小时</td>
+                    <td>6小时</td>
+                    <td>24小时</td>
+                </tr>
+                <tr>
+                    <td>Cv</td>
+                    {% for cv in cvs %}
+                        <td>{{ '%.2f' % cv }}</td>
+                    {% endfor %}
+                </tr>
+
+                <tr>
+                    <td>Cs</td>
+                    {% for cs in css %}
+                        <td>{{ '%.2f' % cs }}</td>
+                    {% endfor %}
+                </tr>
+
+                <tr>
+                    <td>点雨量均值(mm)</td>
+                    {% for yl in yls %}
+                        <td>{{ '%.2f' % yl }}</td>
+                    {% endfor %}
+                </tr>
+
+                <tr>
+                    <td>点面系数</td>
+                    {% for alpha in alphas %}
+                        <td>{{ '%.2f' % alpha }}</td>
+                    {% endfor %}
+                </tr>
+
+                <tr><td colspan="5"><br>设计模比系数 Kp</td></tr>
+                {% for ks in kps %}
+                <tr>
+                    <td>{{ "%.2f%%" % (ps[loop.index0] * 100)}}</td>
+                    {% for k in ks %}
+                    <td>{{ '%.2f' % k }}</td>
+                    {% endfor %}
+                </tr>
+                {% endfor %}
+
+                <tr><td colspan="5"><br>设计点雨量（mm）</td></tr>
+                {% for hs in design_point_rainfalls %}
+                <tr>
+                    <td>{{ "%.2f%%" % (ps[loop.index0] * 100)}}</td>
+                    {% for h in hs %}
+                    <td>{{ '%.2f' % h }}</td>
+                    {% endfor %}
+                </tr>
+                {% endfor %}
+
+                <tr><td colspan="5"><br>设计面雨量（mm）</td></tr>
+                {% for hs in design_area_rainfalls %}
+                <tr>
+                    <td>{{ "%.2f%%" % (ps[loop.index0] * 100)}}</td>
+                    {% for h in hs %}
+                    <td>{{ '%.2f' % h }}</td>
+                    {% endfor %}
+                </tr>
+                {% endfor %}
+            </table>
+
+            <table>
+                <tr><td colspan="4"><br>暴雨递减指数</td></tr>
+                <tr>
+                    <td>频率</td>
+                    <td>n1</td>
+                    <td>n2</td>
+                    <td>n3</td>
+                </tr>
+                {% for np in ns %}
+                <tr>
+                    <td>{{ "%.2f%%" % (ps[loop.index0] * 100)}}</td>
+                    {% for n in np %}
+                    <td>{{ '%.2f' % n }}</td>
+                    {% endfor %}
+                </tr>
+                {% endfor %}
+            </table>
+        </div>
+
+        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 input-area-frame">
+            <p>设计净雨成果表</p>
+            <table>
+                <tr><td colspan="5"><br>设计净雨</td></tr>
+                <tr>
+                    <td>项目</td>
+                    <td>P</td>
+                    <!--<td>Imax</td>-->
+                    <td>Pa</td>
+                    <td>P+Pa</td>
+                    <td>R</td>
+                </tr>
+
+                {% for pa in pas %}
+                <tr>
+                    <td>{{ "%.2f%%" % (ps[loop.index0] * 100)}}</td>
+                    <td>{{ "%.2f" % design_area_rainfalls[loop.index0][-1] }}</td>
+                    <!--<td>{{ "%.2f" % imax }}</td>-->
+                    <td>{{ "%.2f" % pa }}</td>
+                    <td>{{ "%.2f" % (design_area_rainfalls[loop.index0][-1] + pa) }}</td>
+                    <td>{{ "%.2f" % r24ps[loop.index0] }}</td>
+                </tr>
+                {% endfor %}
+            </table>
+
+            <table>
+                <tr><td colspan="{{ 100 }}"><br>设计净雨(概化)时程分配</td></tr>
+                <tr>
+                    <td>时程</td>
+                    {% for p in ps %}
+                        <td>{{ "%.2f%%" % (p*100) }}</td>
+                    {% endfor %}
+                </tr>
+
+                {% for trs in r_24h_allocate.T %}
+                <tr>
+                    <td>{{ "%d时" % loop.index }}</td>
+                    {% for r in trs %}
+                        <td>{{ "%.2f" % r }}</td>
+                    {% endfor %}
+                </tr>
+                {% endfor %}
+            </table>
+        </div>
+
+        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 input-area-frame">
+            <p>设计洪水成果表</p>
+            {#
+            <table>
+                <tr><td colspan="{{ 100 }}"><br>设计洪水过程线</td></tr>
+                <tr>
+                    <td>时程</td>
+                    {% for p in ps %}
+                        <td>{{ "%.2f%%" % (p*100) }}</td>
+                    {% endfor %}
+                </tr>
+
+                {% for trs in qs_allocate.T %}
+                <tr>
+                    <td>{{ "%d时" % loop.index }}</td>
+                    {% for r in trs %}
+                        <td>{{ "%.2f" % r }}</td>
+                    {% endfor %}
+                </tr>
+                {% endfor %}
+            </table>
+            #}
+
+            <table>
+                <tr><td colspan="{{ 100 }}"><br>设计洪峰流量</td></tr>
+                <tr>
+                    <td>频率</td>
+                    <td>Qm(m3/s)</td>
+                    <td>τ(h)</td>
+                    <td>ψ</td>
+                    <td>n</td>
+                </tr>
+                {% for np in qs %}
+                <tr>
+                    <td>{{ "%.2f%%" % (ps[loop.index0] * 100)}}</td>
+                    {% for n in np %}
+                    <td>{{ '%.2f' % n }}</td>
+                    {% endfor %}
+                </tr>
+                {% endfor %}
+            </table>
+        </div>
+    </div>
+</body>
+</html>

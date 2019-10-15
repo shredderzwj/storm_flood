@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- 上述3个meta标签*必须*放在最前面，任何其他内容都*必须*跟随其后！ -->
+    <title>查图结果</title>
+
+    <!-- Bootstrap -->
+    <link href="{{ url_for('static', filename='bootstrap/css/bootstrap.min.css') }}" rel="stylesheet">
+
+    <!-- HTML5 shim 和 Respond.js 是为了让 IE8 支持 HTML5 元素和媒体查询（media queries）功能 -->
+    <!-- 警告：通过 file:// 协议（就是直接将 html 页面拖拽到浏览器中）访问页面时 Respond.js 不起作用 -->
+    <!--[if lt IE 9]>-->
+    <script src="{{ url_for('static', filename='bootstrap/js/html5shiv.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='bootstrap/js/respond.min.js') }}"></script>
+    <!--[endif]-->
+	<style>
+		a:hover{
+			text-decoration:none
+		}
+
+		.input-text-container{
+			text-align: left;
+			padding: 0 5px 0 5px;
+		}
+
+		.input-label-container{
+			text-align: right;
+			padding: 0;
+		}
+
+		.input-text{
+			width: 100px;
+			text-align: left;
+		}
+		.input-area-frame{
+			margin: 10px 0 10px 0 ; border: 1px solid #000; padding: 3px; text-align: center
+		}
+	</style>
+</head>
+<body>
+    <!-- jQuery (Bootstrap 的所有 JavaScript 插件都依赖 jQuery，所以必须放在前边) -->
+    <script src="{{ url_for('static', filename='js/jquery-1.12.4.min.js') }}"></script>
+    <!-- 加载 Bootstrap 的所有 JavaScript 插件。你也可以根据需要只加载单个插件。 -->
+    <script src="{{ url_for('static', filename='bootstrap/js/bootstrap.js') }}"></script>
+
+    <div class="container" style="margin: 10px 5px 10px 5px; border: 0; padding: 0">
+		{% if warning is defined %}
+		<!--<div id="warning" class="col-lg-12 col-md-12 col-sm-12 col-xs-12" style="text-align: center; margin-bottom: 15px">-->
+			 <!--<h3 style="color: red">{{ warning }}</h3>-->
+		<!--</div>-->
+		<script>alert("{{ warning }}");</script>
+		{% endif %}
+
+		<div class="col-lg-6 col-md-6 col-sm-6 col-xs-6" style="margin: 0; border: 0; padding: 0; text-align: center">
+			 <button id="re-coord">重选坐标点</button>
+		</div>
+		<div class="col-lg-6 col-md-6 col-sm-6 col-xs-6" style="margin: 0; border: 0; padding: 0; text-align: center">
+			<a href="{{ url_for('pick_coord') }}?coord={{ '%s,%s' % (lon, lat) }}" target="image"><button>返回坐标点</button></a>
+		</div>
+		<form method="get" action="{{ url_for('result') }}" target="image" id="param-form">
+			{% if area < 7 and f < 200 %}
+			<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 input-area-frame">
+				<p>选择工程类型、设计频率</p>
+				<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+					小型农水工程（常用频率）&nbsp;&nbsp;<input type="radio" name="is_use_tu_n" value="1" {% if is_use_tu_n %}checked{% endif %}>
+				</div>
+
+				<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+					中小水库工程（希遇频率）&nbsp;&nbsp;<input type="radio" name="is_use_tu_n" value="0" {% if not is_use_tu_n %}checked{% endif %}>
+				</div>
+			<!--</div>-->
+				<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">&nbsp;</div>
+			<!--<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 input-area-frame">-->
+				<!--<p>选择设计频率</p>-->
+				{% for p in all_ps %}
+				<div class="col-lg-3 col-md-4 col-sm-6 col-xs-6" style="margin: 0; border: 0; padding: 0">
+					<input type="checkbox" name="{{ 'p_%d' % p }}" value="1" {%for p_var in ps_var%}{% if p_var == 'p_%d' % p %}checked{% endif %}{% endfor %}>{{ '%5.2f%%' % (1/p*100)}}
+				</div>
+				{% endfor %}
+			</div>
+			{% endif %}
+
+			<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 input-area-frame">
+				<p>流域基本情况</p>
+					<input type="text" value="{{ area }}" hidden="hidden" name="area">
+
+
+				<div class="col-lg-6 col-md-6 col-sm-6 col-xs-6 input-label-container">流域中心经度：</div>
+				<div class="col-lg-6 col-md-6 col-sm-6 col-xs-6 input-text-container">
+					<input type="text" value="{{ lon }}" name="lon" class="input-text" readonly>
+				</div>
+
+				<div class="col-lg-6 col-md-6 col-sm-6 col-xs-6 input-label-container">流域中心纬度：</div>
+				<div class="col-lg-6 col-md-6 col-sm-6 col-xs-6 input-text-container">
+					<input type="text" value="{{ lat }}" name="lat" class="input-text" readonly>
+				</div>
+
+				<div class="col-lg-6 col-md-6 col-sm-6 col-xs-6 input-label-container">所在的水文分区：</div>
+				<div class="col-lg-6 col-md-6 col-sm-6 col-xs-6 input-text-container">
+					<input type="text" value="{{ area_name }}" class="input-text" readonly>
+					<a href="{{ url_for('get_image') }}?key=8401" target="image">图</a>
+				</div>
+
+				<div class="col-lg-6 col-md-6 col-sm-6 col-xs-6 input-label-container">流域面积：</div>
+				<div class="col-lg-6 col-md-6 col-sm-6 col-xs-6 input-text-container">
+					<input type="text" name="f" value="{{ '%.3f' % f }}" class="input-text">
+				</div>
+
+				<div class="col-lg-6 col-md-6 col-sm-6 col-xs-6 input-label-container">河道长度：</div>
+				<div class="col-lg-6 col-md-6 col-sm-6 col-xs-6 input-text-container">
+					<input type="text" name="l" value="{{ '%.3f' % l }}" class="input-text">
+				</div>
+
+				<div class="col-lg-6 col-md-6 col-sm-6 col-xs-6 input-label-container">河道比降：</div>
+				<div class="col-lg-6 col-md-6 col-sm-6 col-xs-6 input-text-container">
+					<input type="text" name="j" value="{{ '%.3f' % j }}" class="input-text">
+				</div>
+			</div>
+
+			<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 input-area-frame">
+				<p>参数输入</p>
+				<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12" style="margin: 5px auto 5px auto; text-align: left">
+					<p style="font-weight: bold">以下暴雨参数已根据输入的经纬坐标点自动从图上查出，若对数据有疑问，可重新人工查图校核修改数值。</p>
+				</div>
+
+				<div class="col-lg-6 col-md-6 col-sm-6 col-xs-6 input-label-container">Cs / Cv：</div>
+				<div class="col-lg-6 col-md-6 col-sm-6 col-xs-6 input-text-container">
+					<input type="text" name="k" value="{{ '%.3f' % k }}" class="input-text">
+				</div>
+				{% for contour in contours%}
+				<div class="col-lg-6 col-md-6 col-sm-6 col-xs-6 input-label-container">{{ contour.name }}：</div>
+				<div class="col-lg-6 col-md-6 col-sm-6 col-xs-6 input-text-container">
+					<input type="text" value="{{ '%.3f' % contour.value }}" name="{{ contour.var }}" class="input-text">
+					<a href="{{ url_for('get_image') }}?key={{ contour.key }}" target="image">图</a>
+				</div>
+				{% endfor %}
+
+			{% if area < 7 and f < 200 %}
+				<div class="col-lg-6 col-md-6 col-sm-6 col-xs-6 input-label-container">最大初损Imax：</div>
+				<div class="col-lg-6 col-md-6 col-sm-6 col-xs-6 input-text-container">
+					<input type="text" name="imax" value="{{ '%.3f' % imax }}" class="input-text">
+					<a href="{{ url_for('get_image') }}?key=8425-1" target="image">图</a>
+				</div>
+
+				<div class="col-lg-6 col-md-6 col-sm-6 col-xs-6 input-label-container">θ：</div>
+				<div class="col-lg-6 col-md-6 col-sm-6 col-xs-6 input-text-container">
+					<input type="text" name="theta" value="{{ '%.3f' % theta }}" class="input-text">
+				</div>
+
+				<div class="col-lg-6 col-md-6 col-sm-6 col-xs-6 input-label-container">汇流参数m：</div>
+				<div class="col-lg-6 col-md-6 col-sm-6 col-xs-6 input-text-container">
+					<input type="text" name="m" value="{{ '%.3f' % m }}" class="input-text">
+					<a href="{{ url_for('get_image') }}?key=8426" target="image">图</a>
+				</div>
+
+				<div class="col-lg-6 col-md-6 col-sm-6 col-xs-6 input-label-container">平均入渗率μ：</div>
+				<div class="col-lg-6 col-md-6 col-sm-6 col-xs-6 input-text-container">
+					<input type="text" name="mu" value="{{ '%.3f' % mu }}" class="input-text">
+					<a href="{{ url_for('get_image') }}?key=8426-1" target="image">图</a>
+				</div>
+
+				<div class="col-lg-6 col-md-6 col-sm-6 col-xs-6 input-label-container">10min点面系数α：</div>
+				<div class="col-lg-6 col-md-6 col-sm-6 col-xs-6 input-text-container">
+					<input type="text" name="alpha_0" value="{{ '%.3f' % alphas[0] }}" class="input-text">
+					<a href="{{ url_for('get_image') }}?key=8424" target="image">图</a>
+				</div>
+
+				<div class="col-lg-6 col-md-6 col-sm-6 col-xs-6 input-label-container">1h点面系数α：</div>
+				<div class="col-lg-6 col-md-6 col-sm-6 col-xs-6 input-text-container">
+					<input type="text" name="alpha_1" value="{{ '%.3f' % alphas[1] }}" class="input-text">
+					<a href="{{ url_for('get_image') }}?key=8424" target="image">图</a>
+				</div>
+
+				<div class="col-lg-6 col-md-6 col-sm-6 col-xs-6 input-label-container">6h点面系数α：</div>
+				<div class="col-lg-6 col-md-6 col-sm-6 col-xs-6 input-text-container">
+					<input type="text" name="alpha_2" value="{{ '%.3f' % alphas[2] }}" class="input-text">
+					<a href="{{ url_for('get_image') }}?key=8424" target="image">图</a>
+				</div>
+
+				<div class="col-lg-6 col-md-6 col-sm-6 col-xs-6 input-label-container">24h点面系数α：</div>
+				<div class="col-lg-6 col-md-6 col-sm-6 col-xs-6 input-text-container">
+					<input type="text" name="alpha_3" value="{{ '%.3f' % alphas[3] }}" class="input-text">
+					<a href="{{ url_for('get_image') }}?key=8424" target="image">图</a>
+				</div>
+
+				<div class="col-lg-6 col-md-6 col-sm-6 col-xs-6 input-label-container">P + Pa ~ R 曲线：</div>
+				<div class="col-lg-6 col-md-6 col-sm-6 col-xs-6 input-text-container">
+					<select name="ppa_r_id" form="param-form" class="input-text">
+					   <option value="1" {% if area == 1 %}selected{% endif %}>I区</option>
+					   <option value="2" {% if area == 2 %}selected{% endif %}>II区</option>
+					   <option value="3" {% if area == 3 %}selected{% endif %}>III区</option>
+					   <option value="4" {% if area == 4 %}selected{% endif %}>IV区</option>
+					   <option value="5" {% if area == 5 %}selected{% endif %}>V区</option>
+					   <option value="6" {% if area == 6 %}selected{% endif %}>VI-1区</option>
+					   <option value="7">VI-2区</option>
+					   <option value="8">VI-3区</option>
+					</select>
+					<a href="{{ url_for('get_image') }}?key=8425" target="image">图</a>
+				</div>
+
+			</div>
+			<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12" style="margin: 15px auto; text-align: center">
+				<input type="submit" value="计算">
+			</div>
+			{% else %}
+			</div>
+			<p style="color: red; font-weight: bold">暂不支持非山丘区或者流域面积大于200平方公里区域的计算</p>
+			{% endif %}
+		</form>
+	<script>
+		!function () {
+			var $message = $('#warning');
+			setTimeout(function(){
+               $message.fadeOut("slow", function(){ $message.addClass("hide"); });
+            }, 2000);
+		}();
+		var refresh = $('#re-coord');
+		refresh.click(function () {
+			window.open('{{ url_for("pick_coord") }}?reChoice=true', 'image')
+		});
+		window.open('{{ url_for("pick_coord") }}?coord={{ "%s,%s" % (lon, lat) }}', 'image')
+	</script>
+</body>
+</html>

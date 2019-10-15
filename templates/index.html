@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- 上述3个meta标签*必须*放在最前面，任何其他内容都*必须*跟随其后！ -->
+    <title>河南省设计暴雨洪水图集自动查算系统</title>
+
+    <!-- Bootstrap -->
+    <link href="{{ url_for('static', filename='bootstrap/css/bootstrap.min.css') }}" rel="stylesheet">
+
+    <!-- HTML5 shim 和 Respond.js 是为了让 IE8 支持 HTML5 元素和媒体查询（media queries）功能 -->
+    <!-- 警告：通过 file:// 协议（就是直接将 html 页面拖拽到浏览器中）访问页面时 Respond.js 不起作用 -->
+    <!--[if lt IE 9]>-->
+    <script src="{{ url_for('static', filename='bootstrap/js/html5shiv.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='bootstrap/js/respond.min.js') }}"></script>
+    <!--[endif]-->
+	<style>
+		a:hover{
+			text-decoration:none
+		}
+
+		.input-text-container{
+			text-align: left;
+			padding: 0 5px 0 5px;
+		}
+
+		.input-label-container{
+			text-align: right;
+			padding: 0;
+		}
+
+		.input-text{
+			width: 100px;
+			text-align: left;
+		}
+		.input-area-frame{
+			margin: 10px 0 10px 0 ; border: 1px solid #000; padding: 3px; text-align: center
+		}
+	</style>
+</head>
+<body>
+	<!-- jQuery (Bootstrap 的所有 JavaScript 插件都依赖 jQuery，所以必须放在前边) -->
+    <script src="{{ url_for('static', filename='js/jquery-1.12.4.min.js') }}"></script>
+    <!-- 加载 Bootstrap 的所有 JavaScript 插件。你也可以根据需要只加载单个插件。 -->
+    <script src="{{ url_for('static', filename='bootstrap/js/bootstrap.js') }}"></script>
+
+	<div class="container" style="margin: 10px 5px 10px 5px; border: 0; padding: 0">
+		{% if warning %}
+		<div id="warning" class="col-lg-12 col-md-12 col-sm-12 col-xs-12" style="text-align: center; margin-bottom: 15px">
+			<h3 style="color: red; font-weight: bold">{{ warning }}</h3>
+		</div>
+		{% endif %}
+		<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 input-area-frame">
+			<h3>说明</h3>
+			<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12" style="margin: 5px auto 5px auto; text-align: left">
+				<p style="font-weight: bold">本系统计算方法基于<a href="{{ url_for('show_doc_images') }}" target="image">《河南省设计暴雨洪水图集》（84图集）</a></p>
+			</div>
+
+			<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12" style="margin: 5px auto 5px auto; text-align: left">
+				<p style="font-weight: bold">暂可用于河南省山丘区集水面积200平方公里以下区域的洪峰及洪水过程计算。</p>
+			</div>
+		</div>
+
+		<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 input-area-frame">
+			<h3>计算步骤</h3>
+			<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12" style="margin: 5px auto 5px auto; text-align: left">
+				<p><b>1、确定计算流域的情况</b></p>
+			</div>
+
+			<form action="/chart" method="get" target="chart">
+				<div class="col-lg-6 col-md-6 col-sm-6 col-xs-6 input-label-container">流域中心坐标：</div>
+				<div class="col-lg-6 col-md-6 col-sm-6 col-xs-6 input-text-container">
+					<input type="text" class="input-text" name="coord" value="{{ coord }}" title="输入格式为：经度,纬度 例如：115.64,33.89" placeholder="115.64,33.89" required>
+					<a href="{{ url_for('get_image') }}?key=8401" target="image" title="显示水文分区图">图</a>&nbsp;
+					<a href="{{ url_for('pick_coord') }}" target="image" title="使用高德地图坐标拾取器拾取坐标">选</a>
+				</div>
+				<div class="col-lg-6 col-md-6 col-sm-6 col-xs-6 input-label-container">流域面积：</div>
+				<div class="col-lg-6 col-md-6 col-sm-6 col-xs-6 input-text-container">
+					<input type="text" class="input-text" name="f" value="{{ f }}" placeholder="平方千米 <1000" required>
+				</div>
+				<div class="col-lg-6 col-md-6 col-sm-6 col-xs-6 input-label-container">河道长度：</div>
+				<div class="col-lg-6 col-md-6 col-sm-6 col-xs-6 input-text-container">
+					<input type="text" class="input-text" name="l" value="{{ l }}" placeholder="千米" required>
+				</div>
+				<div class="col-lg-6 col-md-6 col-sm-6 col-xs-6 input-label-container">河道比降：</div>
+				<div class="col-lg-6 col-md-6 col-sm-6 col-xs-6 input-text-container">
+					<input type="text" class="input-text" name="j" value="{{ j }}" placeholder="" required>
+				</div>
+				<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12" style="margin: 15px auto; text-align: center">
+					<input type="submit" value="确定" id="re-coords">
+				</div>
+			</form>
+
+			<br />
+			<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12" style="margin: 5px auto 5px auto; text-align: left">
+				<p><b>2、输入/修改 计算所需的必要参数</b></p>
+			</div><br />
+			<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12" style="margin: 5px auto 5px auto; text-align: left">
+				<p><b>3、计算结果展示</b></p>
+			</div><br />
+	</div>
+
+	</div>
+	<script>
+		!function () {
+			var $message = $('#warning');
+			setTimeout(function(){
+               $message.fadeOut("slow", function(){ $message.addClass("hide"); });
+            }, 2000);
+		}();
+		var refresh = $('#re-coord');
+		refresh.click(function () {
+			window.open('{{ url_for("pick_coord") }}?coord={{ coord }}', 'image')
+		})
+	</script>
+	{{ alert }}
+</body>
+</html>

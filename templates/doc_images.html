@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>使用说明</title>
+    <style>
+        a{
+			text-decoration:none
+		}
+		a:hover{
+			text-decoration:none
+		}
+    </style>
+</head>
+
+<body>
+
+<p style="text-align: center;">
+    <a href="{{ url_for('static', filename='tu/doc.pdf') }}" target="_blank" style="color: red; font-size: 16px; font-weight: bold">下载</a>
+</p>
+
+{% for x in image_num %}
+    <img src="{{ url_for('static', filename='tu/doc_%d.png' % x) }}" style="width: 100%; height: auto">
+{% endfor %}
+
+</body>
+</html>
