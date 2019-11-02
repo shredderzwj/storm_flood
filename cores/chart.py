@@ -175,15 +175,17 @@ def get_m(area, theta):
     :return: float 汇流参数值
     """
     if area == 1:
-        return 0.314287*theta**0.404842
+        return 0.314287 * theta ** 0.404842
     if area == 2:
-        return 0.478361*theta**0.400535
+        return 0.478361 * theta ** 0.400535
     if area == 3:
-        return 0.575721*theta**0.401817
+        return 0.575721 * theta ** 0.401817
     if area == 4:
-        return 0.417826*theta**0.400506
+        return 0.417826 * theta ** 0.400506
     if area == 5:
-        return 0.511508*theta**.404065
+        return 0.511508 * theta ** 0.404065
+    if area == 6:
+        return 0.511508 * theta ** 0.404065
     return 0.0
 
 
