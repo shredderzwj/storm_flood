@@ -174,6 +174,10 @@ def get_m(area, theta):
     :param theta: float θ值
     :return: float 汇流参数值
     """
+    if theta < 5:
+        theta = 5
+    if theta > 100:
+        theta = 100
     if area == 1:
         return 0.314287 * theta ** 0.404842
     if area == 2:
